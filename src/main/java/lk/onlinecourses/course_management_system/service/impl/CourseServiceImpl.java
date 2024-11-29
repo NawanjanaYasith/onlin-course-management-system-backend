@@ -1,6 +1,7 @@
 package lk.onlinecourses.course_management_system.service.impl;
 
 import lk.onlinecourses.course_management_system.dto.CourseDTOWithCourseMaterial;
+import lk.onlinecourses.course_management_system.dto.CourseDto;
 import lk.onlinecourses.course_management_system.dto.CourseMaterialDto;
 import lk.onlinecourses.course_management_system.entity.Course;
 import lk.onlinecourses.course_management_system.entity.CourseMaterial;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseServiceImpl implements CourseService {
@@ -55,4 +57,32 @@ public class CourseServiceImpl implements CourseService {
         }
         return false;
     }
+
+    public List<CourseDTOWithCourseMaterial> getAllCourse() {
+        List<Course> all = courseRepo.findAll(); // Fetch all courses from the repository
+
+        List<CourseDTOWithCourseMaterial> courseDTOWithCourseMaterials = new ArrayList<>();
+
+        for (Course course : all) {
+            // Convert CourseMaterial entities to CourseMaterialDto objects
+            List<CourseMaterialDto> courseMaterialDtos = course.getCourseMaterials().stream()
+                    .map(courseMaterial -> new CourseMaterialDto(
+                            courseMaterial.getId(),
+                            courseMaterial.getFileName(),
+                            courseMaterial.getFileUrl()
+                    ))
+                    .collect(Collectors.toList());
+
+            // Create CourseDTOWithCourseMaterial using the data from Course and CourseMaterial
+            courseDTOWithCourseMaterials.add(new CourseDTOWithCourseMaterial(
+                    course.getId(),
+                    course.getTitle(),
+                    course.getDescription(),
+                    courseMaterialDtos
+            ));
+        }
+
+        return courseDTOWithCourseMaterials;
+    }
+
 }
