@@ -41,7 +41,14 @@ public class CourseController {
         return new ResponseEntity<>(allCourse, HttpStatus.OK);
 
     }
+    @GetMapping("/get_course/{id}")
+    public ResponseEntity<Object> getCourseById(@PathVariable Integer id) {
+        System.out.println(id);
+        List<CourseDTOWithCourseMaterial> byId = courseService.getById(id);
+        if (byId == null) {
+            return new ResponseEntity<>("No course exist",HttpStatus.NOT_FOUND);  // Return 404 if not found
+        }
+        return new ResponseEntity<>(byId, HttpStatus.OK);
 
-
-
+    }
 }

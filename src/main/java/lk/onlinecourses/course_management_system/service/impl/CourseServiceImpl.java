@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -82,6 +83,31 @@ public class CourseServiceImpl implements CourseService {
             ));
         }
 
+        return courseDTOWithCourseMaterials;
+    }
+    public List<CourseDTOWithCourseMaterial> getById(Integer id) {
+        Optional<Course> byId = courseRepo.findById(id);
+        List<CourseDTOWithCourseMaterial> courseDTOWithCourseMaterials = new ArrayList<>();
+
+        if (byId.isPresent()) {
+            Course course = byId.get();
+            // Convert CourseMaterial entities to CourseMaterialDto objects
+            List<CourseMaterialDto> courseMaterialDtos = course.getCourseMaterials().stream()
+                    .map(courseMaterial -> new CourseMaterialDto(
+                            courseMaterial.getId(),
+                            courseMaterial.getFileName(),
+                            courseMaterial.getFileUrl()
+                    ))
+                    .collect(Collectors.toList());
+
+            // Create CourseDTOWithCourseMaterial using the data from Course and CourseMaterial
+            courseDTOWithCourseMaterials.add(new CourseDTOWithCourseMaterial(
+                    course.getId(),
+                    course.getTitle(),
+                    course.getDescription(),
+                    courseMaterialDtos
+            ));
+        }
         return courseDTOWithCourseMaterials;
     }
 

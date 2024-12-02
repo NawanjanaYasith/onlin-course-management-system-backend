@@ -10,4 +10,6 @@ public interface CourseService {
 
     boolean deleteCourse(Integer id);
     List<CourseDTOWithCourseMaterial> getAllCourse();
+
+    List<CourseDTOWithCourseMaterial> getById(Integer id);
 }
